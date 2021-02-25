@@ -47,7 +47,7 @@ def update_data(data: dict, file_name=None):
             remastered_data.append(row)
     with open(file_name, "w", newline="", encoding='utf8') as file:
         writer = csv.writer(file, delimiter=';')
-        writer.writerow(remastered_data)
+        writer.writerows(remastered_data)
 
 
 def get_data(file_name=None):
@@ -65,7 +65,3 @@ def get_parsed_urls(file_name=None):
     for row in data:
         urls.append(row[0])
     return urls
-
-
-if __name__ == '__main__':
-    print(get_parsed_urls())

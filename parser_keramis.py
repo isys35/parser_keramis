@@ -78,7 +78,11 @@ def parse_product(response: str) -> dict:
         price = soup.select_one('.totalPrice').text
     else:
         price = None
-    description = soup.select_one('.description_block_content').text.strip()
+    description_block = soup.select_one('.description_block_content')
+    if description_block:
+        description = description_block.text.strip()
+    else:
+        description = None
     soup_params = soup.select_one('.cpt_product_params_selectable')
     characteristiks = []
     trs = soup_params.select('tr')
