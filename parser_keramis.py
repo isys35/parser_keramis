@@ -73,7 +73,11 @@ def parse_product(response: str) -> dict:
     """
     soup = BeautifulSoup(response, 'lxml')
     name = soup.select_one('h1').text
-    price = soup.select_one('.totalPrice').text
+    price_block = soup.select_one('.totalPrice')
+    if price_block:
+        price = soup.select_one('.totalPrice').text
+    else:
+        price = None
     description = soup.select_one('.description_block_content').text.strip()
     soup_params = soup.select_one('.cpt_product_params_selectable')
     characteristiks = []
@@ -88,7 +92,6 @@ def parse_product(response: str) -> dict:
             'description': description,
             'photos': photos,
             'characteristiks': characteristiks}
-    print(data)
     return data
 
 
@@ -132,7 +135,8 @@ def get_product_data(product_url: str) -> dict:
 
 def parser_1():
     """
-    Первый режим работы парсера
+    1 режим работы парсера:
+    Парсер всего сайта
     """
     db.create_data_file()
     categories_urls = get_sub_categories()
@@ -143,5 +147,42 @@ def parser_1():
             db.add_data(product_data)
 
 
+def parser_2():
+    """
+    2 режим работы:
+    Парсер одного раздела по ссылке:
+    """
+    db.create_data_file()
+    category_url = input('Введите ссылку на категорию: ')
+    products_urls = get_urls_products(category_url)
+    for product_url in products_urls:
+        product_data = get_product_data(product_url)
+        db.add_data(product_data)
+
+
+def parser_3():
+    """
+    3 режим работы:
+    Обновление цен одного раздела по ссылке:
+    """
+    category_url = input('Введите ссылку на категорию: ')
+    products_urls = get_urls_products(category_url)
+    for product_url in products_urls:
+        product_data = get_product_data(product_url)
+        db.update_data(product_data)
+
+
 if __name__ == '__main__':
-    parser_1()
+    info = """Режимы работы:
+    1 - Парсер всего сайта
+    2 - Парсер одного раздела по ссылке
+    3 - Обновление цен одного раздела по ссылке
+    """
+    print(info)
+    type_work = input("Введите режим работы(1/2/3): ")
+    if type_work == '1':
+        parser_1()
+    elif type_work == '2':
+        parser_2()
+    elif type_work == '3':
+        parser_3()
