@@ -85,11 +85,15 @@ def parse_product(response: str) -> dict:
         description = None
     soup_params = soup.select_one('.cpt_product_params_selectable')
     characteristiks = []
-    trs = soup_params.select('tr')
-    for tr in trs:
-        characteristiks.append(tr.text.strip().replace('\n', ''))
+    if soup_params:
+        trs = soup_params.select('tr')
+        for tr in trs:
+            characteristiks.append(tr.text.strip().replace('\n', ''))
     main_photo = HOST + soup.select_one('#main_image')['src']
-    additional_photo = [HOST + el['data-link'] for el in soup.select('a.product-thumb')]
+    if soup.select('a.product-thumb'):
+        additional_photo = [HOST + el['data-link'] for el in soup.select('a.product-thumb')]
+    else:
+        additional_photo =[]
     photos = additional_photo + [main_photo]
     data = {'name': name,
             'price': price,
